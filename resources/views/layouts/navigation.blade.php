@@ -17,6 +17,8 @@
                     </x-nav-link>
                     <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.*')">Patients</x-nav-link>
                     <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')">Appointments</x-nav-link>
+                    <x-nav-link :href="route('test-results.index')" :active="request()->routeIs('test-results.*')">Test Results</x-nav-link>
+                    <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">Certificates</x-nav-link>
                 </div>
             </div>
 
@@ -74,6 +76,8 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('patients.index')">Patients</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('appointments.index')">Appointments</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('test-results.index')">Test Results</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('certificates.index')">Certificates</x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -102,4 +106,5 @@
         </div>
     </div>
 </nav>
+
 
