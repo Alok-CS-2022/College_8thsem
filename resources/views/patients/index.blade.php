@@ -8,9 +8,18 @@
                 @if (session("success"))
                     <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">{{ session("success") }}</div>
                 @endif
-                <a href="{{ route("patients.create") }}" class="inline-block mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                    + Register New Patient
-                </a>
+                <div class="flex justify-between items-center mb-4">
+                    <a href="{{ route("patients.create") }}" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                        + Register New Patient
+                    </a>
+                    <form method="GET" action="{{ route("patients.index") }}" class="flex gap-2">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Search name, passport, or phone" class="rounded border-gray-300 w-64">
+                        <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Search</button>
+                        @if ($search)
+                            <a href="{{ route("patients.index") }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Clear</a>
+                        @endif
+                    </form>
+                </div>
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
@@ -35,7 +44,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-4 py-4 text-gray-500">No patients registered yet.</td></tr>
+                            <tr><td colspan="5" class="px-4 py-4 text-gray-500">No patients found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

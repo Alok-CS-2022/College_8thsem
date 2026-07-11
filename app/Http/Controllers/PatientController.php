@@ -9,9 +9,17 @@ class PatientController extends Controller
     public function index(Request $request)
     {
         $clinicId = $request->user()->clinic_id;
+        $search = $request->query('search');
+
         $patients = Patient::when($clinicId, fn ($q) => $q->where('clinic_id', $clinicId))
+            ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('passport_number', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            }))
             ->latest()->get();
-        return view("patients.index", compact("patients"));
+
+        return view("patients.index", compact("patients", "search"));
     }
 
     public function create() { return view("patients.create"); }
