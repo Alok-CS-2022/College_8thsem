@@ -24,8 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('permission:patient.view,patient.edit')->group(function () {
-        Route::resource('patients', PatientController::class);
-        Route::resource('appointments', AppointmentController::class);
+        Route::resource('patients', PatientController::class)->only(['index', 'create', 'store']);
+        Route::resource('appointments', AppointmentController::class)->only(['index', 'create', 'store']);
         Route::patch('/appointments/{appointment}/check-in', [AppointmentController::class, 'checkIn'])->name('appointments.check-in');
     });
 
