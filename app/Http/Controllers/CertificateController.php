@@ -9,12 +9,20 @@ use Illuminate\Http\Request;
 
 class CertificateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $clinicId = $request->user()->clinic_id;
+
         $pendingReview = TestResult::with("patient")
             ->where("status", "ready_for_review")
+            ->when($clinicId, fn ($q) => $q->whereHas('patient', fn ($p) => $p->where('clinic_id', $clinicId)))
             ->get();
-        $certificates = Certificate::with("patient")->latest()->get();
+
+        $certificates = Certificate::with("patient")
+            ->when($clinicId, fn ($q) => $q->whereHas('patient', fn ($p) => $p->where('clinic_id', $clinicId)))
+            ->latest()
+            ->get();
+
         return view("certificates.index", compact("pendingReview", "certificates"));
     }
 

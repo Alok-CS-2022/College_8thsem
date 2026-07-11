@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 
 class TestResultController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::with(["patient", "testResult"])->latest()->get();
+        $clinicId = $request->user()->clinic_id;
+
+        $appointments = Appointment::with(["patient", "testResult"])
+            ->when($clinicId, fn ($q) => $q->whereHas('patient', fn ($p) => $p->where('clinic_id', $clinicId)))
+            ->latest()
+            ->get();
+
         return view("test_results.index", compact("appointments"));
     }
 

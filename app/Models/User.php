@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'clinic_id',
         'status',
     ];
 
@@ -41,6 +42,11 @@ class User extends Authenticatable
     public function patient()
     {
         return $this->hasOne(Patient::class);
+    }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class);
     }
 
     public function hasPermission(string $permission): bool

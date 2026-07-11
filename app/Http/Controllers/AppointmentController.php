@@ -8,16 +8,26 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = Appointment::with("patient")->latest()->get();
+        $clinicId = $request->user()->clinic_id;
+
+        $appointments = Appointment::with("patient")
+            ->when($clinicId, fn ($q) => $q->whereHas('patient', fn ($p) => $p->where('clinic_id', $clinicId)))
+            ->latest()
+            ->get();
+
         return view("appointments.index", compact("appointments"));
     }
 
     public function create(Request $request)
     {
-        $patients = Patient::all();
+        $clinicId = $request->user()->clinic_id;
+
+        $patients = Patient::when($clinicId, fn ($q) => $q->where('clinic_id', $clinicId))->get();
+
         $selectedPatientId = $request->query("patient");
+
         return view("appointments.create", compact("patients", "selectedPatientId"));
     }
 

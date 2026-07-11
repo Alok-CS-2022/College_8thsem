@@ -7,13 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Patient extends Model
 {
     protected $fillable = [
-        "user_id", "passport_number", "full_name", "date_of_birth",
+        "user_id", "clinic_id", "passport_number", "full_name", "date_of_birth",
         "gender", "address", "phone", "destination_country", "manpower_agency",
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function clinic()
+    {
+        return $this->belongsTo(Clinic::class);
     }
 
     public function appointments()

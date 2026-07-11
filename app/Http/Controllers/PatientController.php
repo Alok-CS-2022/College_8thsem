@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $patients = Patient::latest()->get();
+        $clinicId = $request->user()->clinic_id;
+
+        $patients = Patient::when($clinicId, fn ($q) => $q->where('clinic_id', $clinicId))
+            ->latest()
+            ->get();
+
         return view("patients.index", compact("patients"));
     }
 
@@ -30,6 +35,8 @@ class PatientController extends Controller
             "destination_country" => "required|string",
             "manpower_agency" => "nullable|string",
         ]);
+
+        $validated['clinic_id'] = $request->user()->clinic_id;
 
         $patient = Patient::create($validated);
 
