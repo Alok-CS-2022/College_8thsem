@@ -66,6 +66,7 @@
                             <th class="px-4 py-2 text-left">Status</th>
                             <th class="px-4 py-2 text-left">Issue Date</th>
                             <th class="px-4 py-2 text-left">Expiry Date</th>
+                            <th class="px-4 py-2 text-left">PDF</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
@@ -79,9 +80,16 @@
                                 </td>
                                 <td class="px-4 py-2">{{ $cert->issue_date }}</td>
                                 <td class="px-4 py-2">{{ $cert->expiry_date }}</td>
+                                <td class="px-4 py-2">
+                                    @if ($cert->pdf_path)
+                                        <a href="{{ asset('storage/' . $cert->pdf_path) }}" target="_blank" class="text-blue-600 underline text-xs">Download</a>
+                                    @else
+                                        <span class="text-xs text-gray-400">Generating...</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="px-4 py-4 text-gray-500">No certificates issued yet.</td></tr>
+                            <tr><td colspan="5" class="px-4 py-4 text-gray-500">No certificates issued yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

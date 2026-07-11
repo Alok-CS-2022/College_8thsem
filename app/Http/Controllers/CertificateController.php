@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateCertificatePdf;
 use App\Models\Certificate;
 use App\Models\TestResult;
 use Illuminate\Http\Request;
@@ -13,9 +14,7 @@ class CertificateController extends Controller
         $pendingReview = TestResult::with("patient")
             ->where("status", "ready_for_review")
             ->get();
-
         $certificates = Certificate::with("patient")->latest()->get();
-
         return view("certificates.index", compact("pendingReview", "certificates"));
     }
 
@@ -36,7 +35,9 @@ class CertificateController extends Controller
 
         $testResult->update(["status" => "reviewed"]);
 
+        GenerateCertificatePdf::dispatch($certificate);
+
         return redirect()->route("certificates.index")
-            ->with("success", "Certificate generated for " . $testResult->patient->full_name);
+            ->with("success", "Certificate generated for " . $testResult->patient->full_name . ". PDF is being generated.");
     }
 }

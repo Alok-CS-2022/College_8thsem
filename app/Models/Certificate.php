@@ -11,6 +11,11 @@ class Certificate extends Model
         "issue_date", "expiry_date", "pdf_path",
     ];
 
+    protected $casts = [
+        "issue_date" => "date",
+        "expiry_date" => "date",
+    ];
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);
