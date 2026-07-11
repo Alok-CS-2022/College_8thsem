@@ -40,4 +40,30 @@ class PatientController extends Controller
         return redirect()->route("appointments.create", ["patient" => $patient->id])
             ->with("success", "Patient registered. Now book an appointment.");
     }
+
+    public function show(Patient $patient)
+    {
+        $patient->load(['appointments.testResult', 'certificates']);
+
+        $events = collect();
+        $events->push(['label' => 'Patient registered', 'date' => $patient->created_at]);
+
+        foreach ($patient->appointments as $appt) {
+            $events->push(['label' => "Appointment booked ({$appt->queue_token})", 'date' => $appt->created_at]);
+            if (in_array($appt->status, ['checked_in', 'in_progress', 'completed'])) {
+                $events->push(['label' => "Checked in ({$appt->queue_token})", 'date' => $appt->updated_at]);
+            }
+            if ($appt->testResult) {
+                $events->push(['label' => 'Test results recorded', 'date' => $appt->testResult->updated_at]);
+            }
+        }
+
+        foreach ($patient->certificates as $cert) {
+            $events->push(['label' => "Certificate issued ({$cert->status})", 'date' => $cert->created_at]);
+        }
+
+        $events = $events->sortBy('date')->values();
+
+        return view('patients.show', compact('patient', 'events'));
+    }
 }
