@@ -6,6 +6,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\TestResultController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClinicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:user.manage')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])->name('users.status');
+    });
+
+    Route::middleware('permission:clinic.approve')->group(function () {
+        Route::get('/clinics', [ClinicController::class, 'index'])->name('clinics.index');
+        Route::patch('/clinics/{clinic}/status', [ClinicController::class, 'updateStatus'])->name('clinics.status');
     });
 });
 

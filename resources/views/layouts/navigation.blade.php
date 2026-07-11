@@ -30,6 +30,9 @@
                     @if ($user->hasPermission('user.manage'))
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">Users</x-nav-link>
                     @endif
+                    @if ($user->hasPermission('clinic.approve'))
+                        <x-nav-link :href="route('clinics.index')" :active="request()->routeIs('clinics.*')">Clinics</x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -88,6 +91,9 @@
             @endif
             @if ($user->hasPermission('user.manage'))
                 <x-responsive-nav-link :href="route('users.index')">Users</x-responsive-nav-link>
+            @endif
+            @if ($user->hasPermission('clinic.approve'))
+                <x-responsive-nav-link :href="route('clinics.index')">Clinics</x-responsive-nav-link>
             @endif
         </div>
 
