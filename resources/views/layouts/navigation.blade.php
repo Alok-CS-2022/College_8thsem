@@ -10,21 +10,25 @@
 
                 @php
                     $roleName = Auth::user()->role->name ?? null;
+                    $user = Auth::user();
                 @endphp
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    @if (in_array($roleName, ['Super Admin', 'Clinic Admin']))
+                    @if ($user->hasPermission('patient.view'))
                         <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.*')">Patients</x-nav-link>
                         <x-nav-link :href="route('appointments.index')" :active="request()->routeIs('appointments.*')">Appointments</x-nav-link>
                     @endif
-                    @if (in_array($roleName, ['Super Admin', 'Lab Technician', 'X-Ray Technician']))
+                    @if ($user->hasPermission('medical.enter'))
                         <x-nav-link :href="route('test-results.index')" :active="request()->routeIs('test-results.*')">Test Results</x-nav-link>
                     @endif
-                    @if (in_array($roleName, ['Super Admin', 'Doctor']))
+                    @if ($user->hasPermission('medical.review'))
                         <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">Certificates</x-nav-link>
+                    @endif
+                    @if ($user->hasPermission('user.manage'))
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">Users</x-nav-link>
                     @endif
                 </div>
             </div>
@@ -72,15 +76,18 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            @if (in_array($roleName, ['Super Admin', 'Clinic Admin']))
+            @if ($user->hasPermission('patient.view'))
                 <x-responsive-nav-link :href="route('patients.index')">Patients</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('appointments.index')">Appointments</x-responsive-nav-link>
             @endif
-            @if (in_array($roleName, ['Super Admin', 'Lab Technician', 'X-Ray Technician']))
+            @if ($user->hasPermission('medical.enter'))
                 <x-responsive-nav-link :href="route('test-results.index')">Test Results</x-responsive-nav-link>
             @endif
-            @if (in_array($roleName, ['Super Admin', 'Doctor']))
+            @if ($user->hasPermission('medical.review'))
                 <x-responsive-nav-link :href="route('certificates.index')">Certificates</x-responsive-nav-link>
+            @endif
+            @if ($user->hasPermission('user.manage'))
+                <x-responsive-nav-link :href="route('users.index')">Users</x-responsive-nav-link>
             @endif
         </div>
 

@@ -50,6 +50,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+
+        if (!in_array($user->status, ['active', 'pending'])) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Your account is ' . $user->status . '. Contact an administrator.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
