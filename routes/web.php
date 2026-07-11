@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:patient.view,patient.edit')->group(function () {
         Route::resource('patients', PatientController::class);
         Route::resource('appointments', AppointmentController::class);
+        Route::patch('/appointments/{appointment}/check-in', [AppointmentController::class, 'checkIn'])->name('appointments.check-in');
     });
 
     Route::middleware('permission:medical.enter')->group(function () {
