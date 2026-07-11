@@ -1,30 +1,30 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
     public function index(Request $request)
     {
         $clinicId = $request->user()->clinic_id;
-
         $patients = Patient::when($clinicId, fn ($q) => $q->where('clinic_id', $clinicId))
-            ->latest()
-            ->get();
-
+            ->latest()->get();
         return view("patients.index", compact("patients"));
     }
 
-    public function create()
-    {
-        return view("patients.create");
-    }
+    public function create() { return view("patients.create"); }
 
     public function store(Request $request)
     {
+        $existing = Patient::where('passport_number', $request->input('passport_number'))->first();
+        if ($existing) {
+            throw ValidationException::withMessages([
+                'passport_number' => "This passport number is already registered to {$existing->full_name}. Search for them instead of creating a duplicate.",
+            ]);
+        }
+
         $validated = $request->validate([
             "passport_number" => "required|string|unique:patients,passport_number",
             "full_name" => "required|string",
@@ -35,11 +35,8 @@ class PatientController extends Controller
             "destination_country" => "required|string",
             "manpower_agency" => "nullable|string",
         ]);
-
         $validated['clinic_id'] = $request->user()->clinic_id;
-
         $patient = Patient::create($validated);
-
         return redirect()->route("appointments.create", ["patient" => $patient->id])
             ->with("success", "Patient registered. Now book an appointment.");
     }
