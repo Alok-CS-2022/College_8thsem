@@ -24,11 +24,20 @@ class TestResultController extends Controller
             "cbc" => "nullable|string", "hbsag" => "nullable|string", "vdrl" => "nullable|string",
             "hiv" => "nullable|string", "blood_group" => "nullable|string", "urine_test" => "nullable|string",
             "xray_findings" => "nullable|string", "flagged_abnormal" => "nullable|boolean",
+            "report" => "nullable|file|mimes:pdf,jpg,jpeg,png|max:10240",
         ]);
         $validated["patient_id"] = $appointment->patient_id;
         $validated["appointment_id"] = $appointment->id;
         $validated["status"] = "ready_for_review";
         $validated["flagged_abnormal"] = $request->has("flagged_abnormal");
+        unset($validated['report']);
+
+        if ($request->hasFile('report')) {
+            $path = $request->file('report')->store('test-reports', 'public');
+            $validated['report_path'] = $path;
+            $validated['report_uploaded_at'] = now();
+            $validated['report_uploaded_by'] = $request->user()->id;
+        }
 
         TestResult::updateOrCreate(["appointment_id" => $appointment->id], $validated);
         $appointment->update(["status" => "completed"]);

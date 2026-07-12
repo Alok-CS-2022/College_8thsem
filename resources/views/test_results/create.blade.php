@@ -4,14 +4,20 @@
             Enter Test Results — {{ $appointment->patient->full_name }}
         </h2>
     </x-slot>
-
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
-                <form method="POST" action="{{ route("test-results.store", $appointment->id) }}" class="space-y-4">
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form method="POST" action="{{ route("test-results.store", $appointment->id) }}" class="space-y-4" enctype="multipart/form-data">
                     @csrf
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">CBC</label>
@@ -38,17 +44,23 @@
                             <input type="text" name="urine_test" value="{{ old("urine_test", $appointment->testResult->urine_test ?? "Normal") }}" class="mt-1 block w-full rounded border-gray-300">
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-700">X-Ray Findings</label>
                         <input type="text" name="xray_findings" value="{{ old("xray_findings", $appointment->testResult->xray_findings ?? "Clear") }}" class="mt-1 block w-full rounded border-gray-300">
                     </div>
-
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Report Upload (PDF or Image)</label>
+                        @if ($appointment->testResult && $appointment->testResult->report_path)
+                            <p class="text-xs text-gray-500 mb-1">
+                                Current: <a href="{{ asset('storage/' . $appointment->testResult->report_path) }}" target="_blank" class="text-indigo-600 underline">View uploaded report</a>
+                            </p>
+                        @endif
+                        <input type="file" name="report" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm">
+                    </div>
                     <div class="flex items-center">
                         <input type="checkbox" name="flagged_abnormal" value="1" id="flagged" class="rounded border-gray-300" {{ ($appointment->testResult->flagged_abnormal ?? false) ? "checked" : "" }}>
                         <label for="flagged" class="ml-2 text-sm text-gray-700">Flag for further examination (abnormal result)</label>
                     </div>
-
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                         Save Results & Mark Complete
                     </button>
