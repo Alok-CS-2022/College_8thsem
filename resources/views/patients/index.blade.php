@@ -13,7 +13,7 @@
                         + Register New Patient
                     </a>
                     <form method="GET" action="{{ route("patients.index") }}" class="flex gap-2">
-                        <input type="text" name="search" value="{{ $search }}" placeholder="Search name, passport, or phone" class="rounded border-gray-300 w-64">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Search name, passport, phone, case ID, or cert ID" class="rounded border-gray-300 w-72">
                         <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Search</button>
                         @if ($search)
                             <a href="{{ route("patients.index") }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Clear</a>

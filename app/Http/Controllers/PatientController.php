@@ -15,7 +15,9 @@ class PatientController extends Controller
             ->when($search, fn ($q) => $q->where(function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                     ->orWhere('passport_number', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhereHas('appointments.medicalCase', fn ($q) => $q->where('id', $search))
+                    ->orWhereHas('certificates', fn ($q) => $q->where('id', $search));
             }))
             ->latest()->get();
 
