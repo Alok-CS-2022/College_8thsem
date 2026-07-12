@@ -8,6 +8,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MedicalCaseNoteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('patients', PatientController::class)->only(['index', 'create', 'store', 'show']);
         Route::resource('appointments', AppointmentController::class)->only(['index', 'create', 'store']);
         Route::patch('/appointments/{appointment}/check-in', [AppointmentController::class, 'checkIn'])->name('appointments.check-in');
+        Route::post('/medical-cases/{medicalCase}/notes', [MedicalCaseNoteController::class, 'store'])->name('medical-case-notes.store');
     });
 
     Route::middleware('permission:medical.enter')->group(function () {

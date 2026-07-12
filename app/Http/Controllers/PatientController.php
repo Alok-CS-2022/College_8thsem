@@ -53,7 +53,7 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $patient->load(['appointments.testResult', 'certificates']);
+        $patient->load(['appointments.testResult', 'appointments.medicalCase.notes.user', 'certificates']);
 
         $events = collect();
         $events->push(['label' => 'Patient registered', 'date' => $patient->created_at]);
@@ -74,6 +74,8 @@ class PatientController extends Controller
 
         $events = $events->sortBy('date')->values();
 
-        return view('patients.show', compact('patient', 'events'));
+        $medicalCases = $patient->appointments->pluck('medicalCase')->filter()->values();
+
+        return view('patients.show', compact('patient', 'events', 'medicalCases'));
     }
 }
