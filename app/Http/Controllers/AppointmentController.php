@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\MedicalCase;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -66,6 +67,11 @@ class AppointmentController extends Controller
     public function checkIn(Appointment $appointment)
     {
         $appointment->update(['status' => 'checked_in']);
+
+        MedicalCase::firstOrCreate(
+            ['appointment_id' => $appointment->id],
+            ['patient_id' => $appointment->patient_id, 'status' => 'registration_complete']
+        );
 
         return back()->with('success', "Checked in {$appointment->patient->full_name}.");
     }

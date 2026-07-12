@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Jobs\GenerateCertificatePdf;
 use App\Models\Certificate;
 use App\Models\TestResult;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class CertificateController extends Controller
 {
@@ -20,17 +19,22 @@ class CertificateController extends Controller
 
         $certificates = Certificate::with("patient")
             ->when($clinicId, fn ($q) => $q->whereHas('patient', fn ($p) => $p->where('clinic_id', $clinicId)))
-            ->latest()
-            ->get();
+            ->latest()->get();
 
         return view("certificates.index", compact("pendingReview", "certificates"));
     }
 
     public function store(Request $request, TestResult $testResult)
     {
-        $validated = $request->validate([
-            "status" => "required|in:fit,unfit,requires_review",
-        ]);
+        $validated = $request->validate(["status" => "required|in:fit,unfit,requires_review"]);
+
+        $medicalCase = $testResult->appointment?->medicalCase;
+
+        if ($medicalCase && !$medicalCase->isReadyForCertificate()) {
+            throw ValidationException::withMessages([
+                'status' => 'Certificate cannot be generated: required examination steps are incomplete.',
+            ]);
+        }
 
         $certificate = Certificate::create([
             "patient_id" => $testResult->patient_id,
@@ -42,6 +46,14 @@ class CertificateController extends Controller
         ]);
 
         $testResult->update(["status" => "reviewed"]);
+
+        if ($medicalCase) {
+            $medicalCase->update([
+                'doctor_reviewed' => true,
+                'status' => $validated['status'] === 'unfit' ? 'rejected' : 'certificate_generated',
+                'assigned_doctor_id' => auth()->id(),
+            ]);
+        }
 
         GenerateCertificatePdf::dispatch($certificate);
 

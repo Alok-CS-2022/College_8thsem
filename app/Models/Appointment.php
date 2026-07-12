@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
@@ -18,5 +16,10 @@ class Appointment extends Model
     public function testResult()
     {
         return $this->hasOne(TestResult::class);
+    }
+
+    public function medicalCase()
+    {
+        return $this->hasOne(MedicalCase::class);
     }
 }

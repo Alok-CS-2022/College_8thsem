@@ -10,6 +10,16 @@
                 <div class="p-4 bg-green-100 text-green-800 rounded">{{ session("success") }}</div>
             @endif
 
+            @if ($errors->any())
+                <div class="p-4 bg-red-100 text-red-800 rounded">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-semibold text-lg mb-4">Pending Doctor Review</h3>
                 <table class="min-w-full divide-y divide-gray-200">
